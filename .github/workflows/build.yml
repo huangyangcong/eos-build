@@ -24,15 +24,12 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Install llvm-12
+      - name: Install dependencies
         run: |
           brew update
           brew install llvm@12
+          brew install gcc@11
           echo 'export PATH="/usr/local/opt/llvm@12/bin:$PATH"' >> $GITHUB_ENV
-
-      - name: Install gcc
-        run: |
-          brew install gcc
 
       - name: Clone & build spring
         run: |
