@@ -27,11 +27,9 @@ jobs:
           submodules: true  # Checkout submodules
 
       - name: Cache dependencies
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         with:
           path: |
-            /usr/local/opt/llvm@12
-            /usr/local/opt/gcc@11
             spring_build/packages
             cdt/build/packages
           key: ${{ runner.os }}-build-${{ hashFiles('**/CMakeLists.txt') }}-${{ env.CDT_VERSION }}-${{ env.SPRING_VERSION }}
@@ -42,7 +40,7 @@ jobs:
           brew install llvm@12
           brew install gcc@11
           brew install cmake  # Install cmake
-          echo 'export PATH="/usr/local/opt/llvm@12/bin:$PATH"' >> $GITHUB_ENV
+          echo 'export PATH="/usr/local/opt/llvm@11/bin:$PATH"' >> $GITHUB_ENV
           echo 'export PATH="/usr/local/opt/gcc@11/bin:$PATH"' >> $GITHUB_ENV
 
       - name: Clone & build spring
@@ -56,7 +54,7 @@ jobs:
           mkdir -p spring_build/packages
           cd spring_build
           echo "BUILDING SPRING FROM v1.0.3"
-          cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=gcc-11 -DCMAKE_CXX_COMPILER=g++-11 -DCMAKE_PREFIX_PATH=/usr/local/opt/llvm@12 ../
+          cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=gcc-11 -DCMAKE_CXX_COMPILER=g++-11 -DCMAKE_PREFIX_PATH=/usr/local/opt/llvm@11 ../
           echo "FINISHED CMAKE SPRING"
           make -j 3 package
           echo "FINISHED BUILDING SPRING"
