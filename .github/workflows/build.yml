@@ -24,6 +24,12 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Install llvm-11
+        run: |
+          brew update
+          brew install llvm@11
+          echo 'export PATH="/usr/local/opt/llvm@11/bin:$PATH"' >> $GITHUB_ENV
+
       - name: Clone & build spring
         run: |
           git clone -b release/1.0 --single-branch https://github.com/AntelopeIO/spring.git
@@ -35,7 +41,7 @@ jobs:
           mkdir -p spring_build/packages
           cd spring_build
           echo "BUILDING SPRING FROM v1.0.3"
-          cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=/usr/lib/llvm-11 ../
+          cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=/usr/local/opt/llvm@11 ../
           echo "FINISHED CMAKE SPRING"
           make -j 3 package
           echo "FINISHED BUILDING SPRING"
@@ -79,9 +85,9 @@ jobs:
       - name: Copy output
         run: |
           mkdir -p output  # Ensure output directory exists
-          mv ../spring/spring_build/antelope-spring_*.deb output/
-          mv ../cdt/build/tools/bin/* output/
-          mv ../cdt/build/packages/cdt_*_amd64.deb output/
+          mv ./spring/spring_build/antelope-spring_*.deb output/
+          mv ./cdt/build/tools/bin/* output/
+          mv ./cdt/build/packages/cdt_*_amd64.deb output/
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
