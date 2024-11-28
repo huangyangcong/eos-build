@@ -23,12 +23,25 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          submodules: true  # Checkout submodules
+
+      - name: Cache dependencies
+        uses: actions/cache@v2
+        with:
+          path: |
+            /usr/local/opt/llvm@12
+            /usr/local/opt/gcc@11
+            spring_build/packages
+            cdt/build/packages
+          key: ${{ runner.os }}-build-${{ hashFiles('**/CMakeLists.txt') }}-${{ env.CDT_VERSION }}-${{ env.SPRING_VERSION }}
 
       - name: Install dependencies
         run: |
           brew update
           brew install llvm@12
           brew install gcc@11
+          brew install cmake  # Install cmake
           echo 'export PATH="/usr/local/opt/llvm@12/bin:$PATH"' >> $GITHUB_ENV
           echo 'export PATH="/usr/local/opt/gcc@11/bin:$PATH"' >> $GITHUB_ENV
 
@@ -90,6 +103,9 @@ jobs:
           mv ../spring/spring_build/antelope-spring_*.deb output/
           mv ../cdt/build/tools/bin/* output/
           mv ../cdt/build/packages/cdt_*_amd64.deb output/
+          mv ./spring/spring_build/antelope-spring_*.deb output/
+          mv ./cdt/build/tools/bin/* output/
+          mv ./cdt/build/packages/cdt_*_amd64.deb output/
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
