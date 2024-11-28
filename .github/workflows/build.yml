@@ -30,6 +30,7 @@ jobs:
           brew install llvm@12
           brew install gcc@11
           echo 'export PATH="/usr/local/opt/llvm@12/bin:$PATH"' >> $GITHUB_ENV
+          echo 'export PATH="/usr/local/opt/gcc@11/bin:$PATH"' >> $GITHUB_ENV
 
       - name: Clone & build spring
         run: |
@@ -59,7 +60,7 @@ jobs:
           git submodule update --init --recursive
           mkdir build
           cd build
-          cmake ..
+          cmake .. CC=gcc-11 CXX=g++-11  # Specify gcc-11 and g++-11
           make -j 3
           cd packages
           chmod -R +x .
@@ -74,7 +75,7 @@ jobs:
           git pull origin ${{ env.CONTRACT_VERSION }}
           mkdir build
           cd build
-          cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTS=ON -Dspring_DIR=${{ env.spring_DIR }} ..
+          cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTS=ON -Dspring_DIR=${{ env.spring_DIR }} .. CC=gcc-11 CXX=g++-11  # Specify gcc-11 and g++-11
           make -j 3
 
       - name: Clone & build eosio-time
