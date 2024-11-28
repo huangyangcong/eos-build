@@ -37,7 +37,8 @@ jobs:
       - name: Install dependencies
         run: |
           brew update
-          brew install llvm
+          brew tap homebrew/cask-versions
+          brew install llvm@11
           brew install gcc@11
           brew install cmake  # Install cmake
           echo 'export PATH="/usr/local/opt/llvm@11/bin:$PATH"' >> $GITHUB_ENV
