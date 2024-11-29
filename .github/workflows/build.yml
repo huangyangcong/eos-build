@@ -37,10 +37,9 @@ jobs:
       - name: Install dependencies
         run: |
           brew update
-          brew install llvm@11 --build-from-source
-          brew install gcc@11
-          brew install cmake  # Install cmake
-          echo 'export PATH="/usr/local/opt/llvm@11/bin:$PATH"' >> $GITHUB_ENV
+          brew install llvm@12
+          brew install cmake gcc@11 wget gmp automake libtool boost doxygen pyenv binutils
+          echo 'export PATH="/usr/local/opt/llvm@12/bin:$PATH"' >> $GITHUB_ENV
           echo 'export PATH="/usr/local/opt/gcc@11/bin:$PATH"' >> $GITHUB_ENV
 
       - name: Clone & build spring
@@ -54,7 +53,7 @@ jobs:
           mkdir -p spring_build/packages
           cd spring_build
           echo "BUILDING SPRING FROM v1.0.3"
-          cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=gcc-11 -DCMAKE_CXX_COMPILER=g++-11 -DCMAKE_PREFIX_PATH=/usr/local/opt/llvm@11 ../
+          cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=gcc-11 -DCMAKE_CXX_COMPILER=g++-11 -DCMAKE_PREFIX_PATH=/usr/local/opt/llvm@12 ../
           echo "FINISHED CMAKE SPRING"
           make -j 3 package
           echo "FINISHED BUILDING SPRING"
