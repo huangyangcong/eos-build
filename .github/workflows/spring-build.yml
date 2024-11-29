@@ -42,6 +42,7 @@ jobs:
           echo 'export PATH="/usr/local/opt/gcc@11/bin:$PATH"' >> $GITHUB_ENV
           export LDFLAGS="-L/usr/local/opt/llvm@11/lib"
           export CPPFLAGS="-I/usr/local/opt/llvm@11/include"
+          ln -s /usr/local/opt/llvm@11/bin/clang++ /usr/local/bin/clang++-11
 
       - name: Clone & build spring
         run: |
