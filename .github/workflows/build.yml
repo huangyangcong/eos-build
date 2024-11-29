@@ -53,7 +53,7 @@ jobs:
           mkdir -p spring_build/packages
           cd spring_build
           echo "BUILDING SPRING FROM v1.0.3"
-          cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=/usr/local/opt/gcc@11/bin/gcc-11 -DCMAKE_CXX_COMPILER=/usr/local/opt/gcc@11/bin/gcc++-11 -DCMAKE_PREFIX_PATH=/usr/local/opt/llvm@11 ../
+          cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=gcc-11 -DCMAKE_CXX_COMPILER=gcc++-11 -DCMAKE_PREFIX_PATH="/usr/local/opt/llvm@11;/usr/local/opt/gcc@11" ../
           echo "FINISHED CMAKE SPRING"
           make -j 3 package
           echo "FINISHED BUILDING SPRING"
