@@ -37,7 +37,7 @@ jobs:
         run: |
           brew update
           brew tap huangyangcong/llvm
-          brew install huangyangcong/llvm/llvm@11 cmake gcc@11 wget gmp automake libtool boost doxygen pyenv binutils
+          brew install huangyangcong/llvm/llvm@11 cmake gcc@11 wget gmp automake libtool boost doxygen pyenv binutils zlib bzip2 xz
 
       - name: Clone & build spring
         run: |
