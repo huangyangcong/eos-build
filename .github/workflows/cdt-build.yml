@@ -51,10 +51,10 @@ jobs:
           git submodule update --init --recursive
           mkdir build
           cd build
-	  echo 'cdt_BUILD_DIR="$(pwd)"' >> $GITHUB_ENV
-	  echo 'cdt_DIR="$(pwd)/lib/cmake/cdt"' >> $GITHUB_ENV
+	  echo 'export cdt_BUILD_DIR="$(pwd)"' >> $GITHUB_ENV
+          echo 'export cdt_DIR="$(pwd)/lib/cmake/cdt"' >> $GITHUB_ENV
           cmake ..
-          make -j $(nproc)
+          make -j $(sysctl -n hw.ncpu)
           cd packages
           chmod -R +x .
           ./generate_package.sh brew mac-cdt-${{ env.CDT_VERSION }} arm64
@@ -68,7 +68,7 @@ jobs:
           mkdir build
           cd build
           cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTS=OFF -Dcdt_DIR=${{ env.cdt_DIR}} ..
-          make -j $(nproc)
+          make -j $(sysctl -n hw.ncpu)
 
       - name: Clone & build eosio-time
         run: |
