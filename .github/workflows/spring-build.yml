@@ -54,7 +54,7 @@ jobs:
           echo "BUILDING SPRING FROM v1.0.3"
           cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=gcc-11 -DCMAKE_CXX_COMPILER=g++-11 -DCMAKE_PREFIX_PATH="/usr/local/opt/llvm@11;/usr/local/opt/gcc@11" ../
           echo "FINISHED CMAKE SPRING"
-          make -j 3 package
+          make -j $(nproc) package
           echo "FINISHED BUILDING SPRING"
 
           # Export spring_DIR for later use
