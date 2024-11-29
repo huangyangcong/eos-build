@@ -51,10 +51,10 @@ jobs:
           git submodule update --init --recursive
           mkdir build
           cd build
-	  echo "cdt_BUILD_DIR=$(pwd)" >> $GITHUB_ENV
-	  echo "cdt_DIR=$(pwd)/lib/cmake/cdt" >> $GITHUB_ENV
+	  echo 'cdt_BUILD_DIR="$(pwd)"' >> $GITHUB_ENV
+	  echo 'cdt_DIR="$(pwd)/lib/cmake/cdt"' >> $GITHUB_ENV
           cmake ..
-          make -j 3
+          make -j $(nproc)
           cd packages
           chmod -R +x .
           ./generate_package.sh brew mac-cdt-${{ env.CDT_VERSION }} arm64
