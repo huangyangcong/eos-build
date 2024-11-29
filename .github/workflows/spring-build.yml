@@ -18,6 +18,9 @@ jobs:
     runs-on: macos-latest
     strategy:
       fail-fast: false
+    env:
+      LDFLAGS: "-L/usr/local/opt/llvm@11/lib"
+      CPPFLAGS: "-I/usr/local/opt/llvm@11/include"
 
     steps:
       - name: Checkout repository
