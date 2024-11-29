@@ -37,7 +37,7 @@ jobs:
       - name: Install dependencies
         run: |
           brew update
-          brew install llvm@12
+          brew install https://github.com/Homebrew/homebrew-core/blob/863cf87a8d05c44d45495017971b60a49f115c6b/Formula/l/llvm@11.rb
           brew install cmake gcc@11 wget gmp automake libtool boost doxygen pyenv binutils
           echo 'export PATH="/usr/local/opt/llvm@12/bin:$PATH"' >> $GITHUB_ENV
           echo 'export PATH="/usr/local/opt/gcc@11/bin:$PATH"' >> $GITHUB_ENV
