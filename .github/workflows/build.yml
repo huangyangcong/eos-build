@@ -38,7 +38,8 @@ jobs:
         run: |
           brew update
           brew tap huangyangcong/llvm
-          brew install huangyangcong/llvm/llvm@11 cmake gcc@11 wget gmp automake libtool boost doxygen pyenv binutils
+          brew install huangyangcong/llvm/llvm@11 cmake gcc@11 wget gmp automake libtool boost doxygen pyenv binutils python3
+          python3 -m pip install pygments
           echo 'export PATH="/usr/local/opt/llvm@11/bin:$PATH"' >> $GITHUB_ENV
           echo 'export PATH="/usr/local/opt/gcc@11/bin:$PATH"' >> $GITHUB_ENV
 
@@ -53,7 +54,7 @@ jobs:
           mkdir -p spring_build/packages
           cd spring_build
           echo "BUILDING SPRING FROM v1.0.3"
-          cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=gcc-11 -DCMAKE_CXX_COMPILER=gcc++-11 -DCMAKE_PREFIX_PATH="/usr/local/opt/llvm@11;/usr/local/opt/gcc@11" ../
+          cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=gcc-11 -DCMAKE_CXX_COMPILER=g++-11 -DCMAKE_PREFIX_PATH="/usr/local/opt/llvm@11;/usr/local/opt/gcc@11" ../
           echo "FINISHED CMAKE SPRING"
           make -j 3 package
           echo "FINISHED BUILDING SPRING"
