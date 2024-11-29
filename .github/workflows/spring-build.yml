@@ -1,4 +1,4 @@
-name: Publish savanna-antelope
+name: build spring
 
 on:
   push:
@@ -12,7 +12,6 @@ on:
 env:
   CDT_VERSION: "v4.1.0"
   SPRING_VERSION: "v1.0.3"
-  CONTRACT_VERSION: "v3.6.0"
 
 jobs:
   build-cdt:
@@ -61,48 +60,10 @@ jobs:
           # Export spring_DIR for later use
           echo "spring_DIR=$(pwd)/lib/cmake/spring" >> $GITHUB_ENV
 
-      - name: Clone & build cdt
-        run: |
-          git clone -b release/4.1 --single-branch https://github.com/AntelopeIO/cdt.git
-          cd cdt
-          git checkout ${{ env.CDT_VERSION }}
-          git pull origin ${{ env.CDT_VERSION }}
-          git submodule update --init --recursive
-          mkdir build
-          cd build
-          cmake .. CC=gcc-11 CXX=g++-11  # Specify gcc-11 and g++-11
-          make -j 3
-          cd packages
-          chmod -R +x .
-          ./generate_package.sh brew mac-cdt-${{ env.CDT_VERSION }} arm64
-
-      - name: Clone & build eos-system-contract
-        run: |
-          git clone https://github.com/AntelopeIO/reference-contracts.git
-          git clone https://github.com/eosnetworkfoundation/eos-system-contracts.git
-          cd eos-system-contracts
-          git checkout ${{ env.CONTRACT_VERSION }}
-          git pull origin ${{ env.CONTRACT_VERSION }}
-          mkdir build
-          cd build
-          cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTS=ON -Dspring_DIR=${{ env.spring_DIR }} .. CC=gcc-11 CXX=g++-11  # Specify gcc-11 and g++-11
-          make -j 3
-
-      - name: Clone & build eosio-time
-        run: |
-          git clone https://github.com/eosnetworkfoundation/eosio.time.git
-          cd eosio.time
-          cdt-cpp eosio.time.cpp
-
       - name: Copy output
         run: |
-          mkdir -p output  # Ensure output directory exists
-          mv ../spring/spring_build/antelope-spring_*.deb output/
-          mv ../cdt/build/tools/bin/* output/
-          mv ../cdt/build/packages/cdt_*_amd64.deb output/
-          mv ./spring/spring_build/antelope-spring_*.deb output/
-          mv ./cdt/build/tools/bin/* output/
-          mv ./cdt/build/packages/cdt_*_amd64.deb output/
+          mkdir -p output
+          mv ${{ env.spring_DIR }}/*.deb output/
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
