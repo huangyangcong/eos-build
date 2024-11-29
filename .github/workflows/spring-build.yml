@@ -40,8 +40,8 @@ jobs:
           brew install huangyangcong/llvm/llvm@11 cmake gcc@11 wget gmp automake libtool boost doxygen pyenv binutils
           echo "LDFLAGS=-L/usr/local/opt/llvm@11/lib" >> $GITHUB_ENV
           echo "CPPFLAGS=-I/usr/local/opt/llvm@11/include" >> $GITHUB_ENV
-          export CXX="/usr/local/opt/llvm@11/bin/clang++"
-          export CC="/usr/local/opt/llvm@11/bin/clang"
+          export CXX="/usr/local/opt/gcc@11/bin/g++-11"
+          export CC="/usr/local/opt/gcc@11/bin/gcc-11"
 
       - name: Clone & build spring
         run: |
