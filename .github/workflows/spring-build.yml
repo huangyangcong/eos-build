@@ -38,12 +38,10 @@ jobs:
           brew update
           brew tap huangyangcong/llvm
           brew install huangyangcong/llvm/llvm@11 cmake gcc@11 wget gmp automake libtool boost doxygen pyenv binutils
-          echo 'export PATH="/usr/local/opt/llvm@11/bin:$PATH"' >> $GITHUB_ENV
-          echo 'export PATH="/usr/local/opt/gcc@11/bin:$PATH"' >> $GITHUB_ENV
-          export LDFLAGS="-L/usr/local/opt/llvm@11/lib"
-          export CPPFLAGS="-I/usr/local/opt/llvm@11/include"
-          ln -s /usr/local/opt/llvm@11/bin/clang++ /usr/local/bin/clang++-11
-          ln -s /usr/local/opt/llvm@11/bin/clang /usr/local/bin/clang-11
+          echo "LDFLAGS=-L/usr/local/opt/llvm@11/lib" >> $GITHUB_ENV
+          echo "CPPFLAGS=-I/usr/local/opt/llvm@11/include" >> $GITHUB_ENV
+          echo "CXX=/usr/local/opt/llvm@11/bin/clang++" >> $GITHUB_ENV
+          echo "CC=/usr/local/opt/llvm@11/bin/clang" >> $GITHUB_ENV
 
       - name: Clone & build spring
         run: |
@@ -56,7 +54,7 @@ jobs:
           mkdir -p spring_build/packages
           cd spring_build
           echo "BUILDING SPRING FROM v1.0.3"
-          cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=gcc-11 -DCMAKE_CXX_COMPILER=g++-11 -DCMAKE_PREFIX_PATH="/usr/local/opt/llvm@11;/usr/local/opt/gcc@11" ../
+          cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH="/usr/local/opt/llvm@11;/usr/local/opt/gcc@11" ../
           echo "FINISHED CMAKE SPRING"
           make -j $(sysctl -n hw.ncpu) package
           echo "FINISHED BUILDING SPRING"
