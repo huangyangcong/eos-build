@@ -37,9 +37,10 @@ jobs:
       - name: Install dependencies
         run: |
           brew update
-          brew install https://raw.githubusercontent.com/Homebrew/homebrew-core/0830deb175643bc245dcdd70d83ce4ace5a705af/Formula/l/llvm%4011.rb
+          brew tap huangyangcong/llvm
+          brew instal brew install huangyangcong/llvm/llvm-11
           brew install cmake gcc@11 wget gmp automake libtool boost doxygen pyenv binutils
-          echo 'export PATH="/usr/local/opt/llvm@12/bin:$PATH"' >> $GITHUB_ENV
+          echo 'export PATH="/usr/local/opt/llvm@11/bin:$PATH"' >> $GITHUB_ENV
           echo 'export PATH="/usr/local/opt/gcc@11/bin:$PATH"' >> $GITHUB_ENV
 
       - name: Clone & build spring
@@ -53,7 +54,7 @@ jobs:
           mkdir -p spring_build/packages
           cd spring_build
           echo "BUILDING SPRING FROM v1.0.3"
-          cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=gcc-11 -DCMAKE_CXX_COMPILER=g++-11 -DCMAKE_PREFIX_PATH=/usr/local/opt/llvm@12 ../
+          cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=gcc-11 -DCMAKE_CXX_COMPILER=g++-11 -DCMAKE_PREFIX_PATH=/usr/local/opt/llvm@11 ../
           echo "FINISHED CMAKE SPRING"
           make -j 3 package
           echo "FINISHED BUILDING SPRING"
