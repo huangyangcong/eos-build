@@ -26,7 +26,7 @@ jobs:
           submodules: true  # Checkout submodules
           
       - name: Set up environment variables
-          run: |
+        run: |
             echo 'export PATH="/opt/homebrew/opt/llvm@11/bin:$PATH"' >> $GITHUB_ENV
             echo 'export LDFLAGS="-L/opt/homebrew/opt/llvm@11/lib -Wl,-rpath,/opt/homebrew/opt/llvm@11/lib"' >> $GITHUB_ENV
             echo 'export CPPFLAGS="-I/opt/homebrew/opt/llvm@11/include"' >> $GITHUB_ENV
