@@ -12,6 +12,7 @@ on:
 env:
   CDT_VERSION: "v4.1.0"
   SPRING_VERSION: "v1.0.3"
+  LLVM_VERSION: "14"
 
 jobs:
   build-cdt:
@@ -45,12 +46,12 @@ jobs:
           brew update
           brew tap huangyangcong/llvm
           brew upgrade cmake
-          #huangyangcong/llvm/llvm@15
-          brew install llvm@15 ninja gcc@11 automake libtool boost doxygen pyenv binutils zlib bzip2
+          #huangyangcong/llvm/llvm@11
+          brew install llvm@${{ env.LLVM_VERSION }} ninja gcc@11 automake libtool boost doxygen pyenv binutils zlib bzip2
           brew --prefix llvm@11
           brew --prefix gcc@11
-          brew link llvm@15
-          ls /opt/homebrew/opt/llvm@15/bin
+          brew link llvm@${{ env.LLVM_VERSION }}
+          ls /opt/homebrew/opt/llvm@14/bin
           ls /opt/homebrew/opt/gcc@11/bin
 
       - name: Clone & build spring
@@ -64,7 +65,7 @@ jobs:
           mkdir -p spring_build/packages
           cd spring_build
           echo "BUILDING SPRING FROM v1.0.3"
-          cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=/opt/homebrew/opt/llvm@15/bin/clang-15 -DCMAKE_CXX_COMPILER=/opt/homebrew/opt/llvm@15/bin/clang++ -DCMAKE_PREFIX_PATH="/opt/homebrew/opt/llvm@15;/opt/homebrew/opt/gcc@11" ../
+          cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=/opt/homebrew/opt/llvm@${{ env.LLVM_VERSION }}/bin/clang-${{ env.LLVM_VERSION }} -DCMAKE_CXX_COMPILER=/opt/homebrew/opt/llvm@${{ env.LLVM_VERSION }}/bin/clang++ -DCMAKE_PREFIX_PATH="/opt/homebrew/opt/llvm@${{ env.LLVM_VERSION }};/opt/homebrew/opt/gcc@11" ../
           echo "FINISHED CMAKE SPRING"
           make -j $(sysctl -n hw.ncpu) package
           echo "FINISHED BUILDING SPRING"
