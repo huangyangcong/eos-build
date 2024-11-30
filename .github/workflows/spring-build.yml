@@ -12,7 +12,7 @@ on:
 env:
   CDT_VERSION: "v4.1.0"
   SPRING_VERSION: "v1.0.3"
-  LLVM_VERSION: "12"
+  LLVM_VERSION: "11"
 
 jobs:
   build-cdt:
@@ -47,7 +47,7 @@ jobs:
           brew tap huangyangcong/llvm
           brew upgrade cmake
           #huangyangcong/llvm/llvm@11
-          brew install llvm@${{ env.LLVM_VERSION }} ninja gcc@11 automake libtool boost doxygen pyenv binutils zlib bzip2
+          brew install huangyangcong/llvm/llvm@11 ninja gcc@11 automake libtool boost doxygen pyenv binutils zlib bzip2
           brew --prefix llvm@${{ env.LLVM_VERSION }}
           brew --prefix gcc@11
           brew link llvm@${{ env.LLVM_VERSION }}
