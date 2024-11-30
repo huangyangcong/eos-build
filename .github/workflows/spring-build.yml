@@ -37,9 +37,22 @@ jobs:
         run: |
           brew update
           brew tap huangyangcong/llvm
-          brew install huangyangcong/llvm/llvm@11 gcc@10 automake libtool boost doxygen pyenv binutils zlib bzip2
-          export LDFLAGS="-L/opt/homebrew/opt/bzip2/lib"
-          export CPPFLAGS="-I/opt/homebrew/opt/bzip2/include"
+          brew install huangyangcong/llvm/llvm@11 gcc@11 automake libtool boost doxygen pyenv binutils zlib bzip2
+
+      - name: Set up environment variables
+        run: |
+          echo 'export PATH="/opt/homebrew/opt/llvm@11/bin:$PATH"' >> $GITHUB_ENV
+          echo 'export LDFLAGS="-L/opt/homebrew/opt/llvm@11/lib -Wl,-rpath,/opt/homebrew/opt/llvm@11/lib"' >> $GITHUB_ENV
+          echo 'export CPPFLAGS="-I/opt/homebrew/opt/llvm@11/include"' >> $GITHUB_ENV
+          echo 'export PATH="/opt/homebrew/opt/binutils/bin:$PATH"' >> $GITHUB_ENV
+          echo 'export LDFLAGS="$LDFLAGS -L/opt/homebrew/opt/binutils/lib"' >> $GITHUB_ENV
+          echo 'export CPPFLAGS="$CPPFLAGS -I/opt/homebrew/opt/binutils/include"' >> $GITHUB_ENV
+          echo 'export LDFLAGS="$LDFLAGS -L/opt/homebrew/opt/zlib/lib"' >> $GITHUB_ENV
+          echo 'export CPPFLAGS="$CPPFLAGS -I/opt/homebrew/opt/zlib/include"' >> $GITHUB_ENV
+          echo 'export PKG_CONFIG_PATH="/opt/homebrew/opt/zlib/lib/pkgconfig"' >> $GITHUB_ENV
+          echo 'export PATH="/opt/homebrew/opt/bzip2/bin:$PATH"' >> $GITHUB_ENV
+          echo 'export LDFLAGS="$LDFLAGS -L/opt/homebrew/opt/bzip2/lib"' >> $GITHUB_ENV
+          echo 'export CPPFLAGS="$CPPFLAGS -I/opt/homebrew/opt/bzip2/include"' >> $GITHUB_ENV
 
       - name: Clone & build spring
         run: |
@@ -52,7 +65,7 @@ jobs:
           mkdir -p spring_build/packages
           cd spring_build
           echo "BUILDING SPRING FROM v1.0.3"
-          cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=gcc-10 -DCMAKE_CXX_COMPILER=g++-10 -DCMAKE_PREFIX_PATH="/usr/local/opt/llvm@11;/usr/local/opt/gcc@10" ../
+          cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=gcc-11 -DCMAKE_CXX_COMPILER=g++-11 -DCMAKE_PREFIX_PATH="/usr/local/opt/llvm@11;/usr/local/opt/gcc@11" ../
           echo "FINISHED CMAKE SPRING"
           make -j $(sysctl -n hw.ncpu) package
           echo "FINISHED BUILDING SPRING"
