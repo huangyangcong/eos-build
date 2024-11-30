@@ -54,8 +54,7 @@ jobs:
           brew tap huangyangcong/llvm
           brew upgrade cmake
           brew install huangyangcong/llvm/llvm@11 cmake gcc@11 automake libtool boost doxygen pyenv binutils zlib bzip2
-
-  
+          brew link -f gcc@11
 
       - name: Clone & build spring
         run: |
