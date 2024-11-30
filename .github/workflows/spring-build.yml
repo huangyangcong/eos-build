@@ -15,7 +15,7 @@ env:
 
 jobs:
   build-cdt:
-    runs-on: macos-12
+    runs-on: macos-latest
     strategy:
       fail-fast: false
 
@@ -39,25 +39,18 @@ jobs:
             echo 'export PATH="/opt/homebrew/opt/bzip2/bin:$PATH"' >> $GITHUB_ENV
             echo 'export LDFLAGS="$LDFLAGS -L/opt/homebrew/opt/bzip2/lib"' >> $GITHUB_ENV
             echo 'export CPPFLAGS="$CPPFLAGS -I/opt/homebrew/opt/bzip2/include"' >> $GITHUB_ENV
-            
-      - name: Cache dependencies
-        uses: actions/cache@v4
-        with:
-          path: |
-            spring_build/packages
-            cdt/build/packages
-          key: ${{ runner.os }}-build-${{ hashFiles('**/CMakeLists.txt') }}-${{ env.CDT_VERSION }}-${{ env.SPRING_VERSION }}
 
       - name: Install dependencies
         run: |
           brew update
           brew tap huangyangcong/llvm
           brew upgrade cmake
-          #huangyangcong/llvm/llvm@11
-          brew install llvm@13 ninja cmake gcc@11 automake libtool boost doxygen pyenv binutils zlib bzip2
-          brew --prefix llvm@13
+          #huangyangcong/llvm/llvm@15
+          brew install llvm@15 ninja gcc@11 automake libtool boost doxygen pyenv binutils zlib bzip2
+          brew --prefix llvm@11
           brew --prefix gcc@11
-          ls /opt/homebrew/opt/llvm@13/bin
+          brew link llvm@15
+          ls /opt/homebrew/opt/llvm@15/bin
           ls /opt/homebrew/opt/gcc@11/bin
 
       - name: Clone & build spring
@@ -71,7 +64,7 @@ jobs:
           mkdir -p spring_build/packages
           cd spring_build
           echo "BUILDING SPRING FROM v1.0.3"
-          cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH="/opt/homebrew/opt/llvm@13;/opt/homebrew/opt/gcc@11" ../
+          cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=gcc-11 -DCMAKE_CXX_COMPILER=g++-11 -DCMAKE_PREFIX_PATH="/opt/homebrew/opt/llvm@15;/opt/homebrew/opt/gcc@11" ../
           echo "FINISHED CMAKE SPRING"
           make -j $(sysctl -n hw.ncpu) package
           echo "FINISHED BUILDING SPRING"
