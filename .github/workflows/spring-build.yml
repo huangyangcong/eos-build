@@ -38,6 +38,8 @@ jobs:
           brew update
           brew tap huangyangcong/llvm
           brew install huangyangcong/llvm/llvm@11 gcc@10 automake libtool boost doxygen pyenv binutils zlib bzip2
+          export LDFLAGS="-L/opt/homebrew/opt/bzip2/lib"
+          export CPPFLAGS="-I/opt/homebrew/opt/bzip2/include"
 
       - name: Clone & build spring
         run: |
