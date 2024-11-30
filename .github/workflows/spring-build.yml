@@ -15,7 +15,7 @@ env:
 
 jobs:
   build-cdt:
-    runs-on: macos-14
+    runs-on: macos-latest
     strategy:
       fail-fast: false
 
@@ -53,8 +53,9 @@ jobs:
           brew update
           brew tap huangyangcong/llvm
           brew upgrade cmake
-          brew install huangyangcong/llvm/llvm@11 ninja cmake gcc@11 automake libtool boost doxygen pyenv binutils zlib bzip2
-          brew --prefix llvm@11
+          #huangyangcong/llvm/llvm@11
+          brew install llvm@13 ninja cmake gcc@11 automake libtool boost doxygen pyenv binutils zlib bzip2
+          brew --prefix llvm@13
           brew --prefix gcc@11
           ls /opt/homebrew/opt/llvm@11/bin
           ls /opt/homebrew/opt/gcc@11/bin
@@ -70,7 +71,7 @@ jobs:
           mkdir -p spring_build/packages
           cd spring_build
           echo "BUILDING SPRING FROM v1.0.3"
-          cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH="/opt/homebrew/opt/llvm@11;/opt/homebrew/opt/gcc@11" ../
+          cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH="/opt/homebrew/opt/llvm@13;/opt/homebrew/opt/gcc@11" ../
           echo "FINISHED CMAKE SPRING"
           make -j $(sysctl -n hw.ncpu) package
           echo "FINISHED BUILDING SPRING"
