@@ -56,6 +56,8 @@ jobs:
           brew install huangyangcong/llvm/llvm@11 cmake gcc@11 automake libtool boost doxygen pyenv binutils zlib bzip2
           brew --prefix llvm@11
           brew --prefix gcc@11
+          ls /opt/homebrew/opt/llvm@11/bin
+          ls /opt/homebrew/opt/gcc@11/bin
 
       - name: Clone & build spring
         run: |
@@ -68,7 +70,7 @@ jobs:
           mkdir -p spring_build/packages
           cd spring_build
           echo "BUILDING SPRING FROM v1.0.3"
-          cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=/opt/homebrew/opt/llvm@11/bin/clang -DCMAKE_CXX_COMPILER=/opt/homebrew/opt/llvm@11/bin/clang++ -DCMAKE_PREFIX_PATH="/opt/homebrew/opt/llvm@11;/opt/homebrew/opt/gcc@11" ../
+          cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=/opt/homebrew/opt/gcc@11/bin/gcc -DCMAKE_CXX_COMPILER=/opt/homebrew/opt/gcc@11/bin/g++ -DCMAKE_PREFIX_PATH="/opt/homebrew/opt/llvm@11;/opt/homebrew/opt/gcc@11" ../
           echo "FINISHED CMAKE SPRING"
           make -j $(sysctl -n hw.ncpu) package
           echo "FINISHED BUILDING SPRING"
