@@ -57,7 +57,7 @@ jobs:
           brew install llvm@13 ninja cmake gcc@11 automake libtool boost doxygen pyenv binutils zlib bzip2
           brew --prefix llvm@13
           brew --prefix gcc@11
-          ls /opt/homebrew/opt/llvm@11/bin
+          ls /opt/homebrew/opt/llvm@13/bin
           ls /opt/homebrew/opt/gcc@11/bin
 
       - name: Clone & build spring
