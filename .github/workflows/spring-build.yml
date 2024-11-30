@@ -48,10 +48,10 @@ jobs:
           brew upgrade cmake
           #huangyangcong/llvm/llvm@11
           brew install llvm@${{ env.LLVM_VERSION }} ninja gcc@11 automake libtool boost doxygen pyenv binutils zlib bzip2
-          brew --prefix llvm@11
+          brew --prefix llvm@${{ env.LLVM_VERSION }}
           brew --prefix gcc@11
           brew link llvm@${{ env.LLVM_VERSION }}
-          ls /opt/homebrew/opt/llvm@14/bin
+          ls /opt/homebrew/opt/llvm@${{ env.LLVM_VERSION }}/bin
           ls /opt/homebrew/opt/gcc@11/bin
 
       - name: Clone & build spring
