@@ -24,7 +24,22 @@ jobs:
         uses: actions/checkout@v4
         with:
           submodules: true  # Checkout submodules
-
+          
+      - name: Set up environment variables
+          run: |
+            echo 'export PATH="/opt/homebrew/opt/llvm@11/bin:$PATH"' >> $GITHUB_ENV
+            echo 'export LDFLAGS="-L/opt/homebrew/opt/llvm@11/lib -Wl,-rpath,/opt/homebrew/opt/llvm@11/lib"' >> $GITHUB_ENV
+            echo 'export CPPFLAGS="-I/opt/homebrew/opt/llvm@11/include"' >> $GITHUB_ENV
+            echo 'export PATH="/opt/homebrew/opt/binutils/bin:$PATH"' >> $GITHUB_ENV
+            echo 'export LDFLAGS="$LDFLAGS -L/opt/homebrew/opt/binutils/lib"' >> $GITHUB_ENV
+            echo 'export CPPFLAGS="$CPPFLAGS -I/opt/homebrew/opt/binutils/include"' >> $GITHUB_ENV
+            echo 'export LDFLAGS="$LDFLAGS -L/opt/homebrew/opt/zlib/lib"' >> $GITHUB_ENV
+            echo 'export CPPFLAGS="$CPPFLAGS -I/opt/homebrew/opt/zlib/include"' >> $GITHUB_ENV
+            echo 'export PKG_CONFIG_PATH="/opt/homebrew/opt/zlib/lib/pkgconfig"' >> $GITHUB_ENV
+            echo 'export PATH="/opt/homebrew/opt/bzip2/bin:$PATH"' >> $GITHUB_ENV
+            echo 'export LDFLAGS="$LDFLAGS -L/opt/homebrew/opt/bzip2/lib"' >> $GITHUB_ENV
+            echo 'export CPPFLAGS="$CPPFLAGS -I/opt/homebrew/opt/bzip2/include"' >> $GITHUB_ENV
+            
       - name: Cache dependencies
         uses: actions/cache@v4
         with:
@@ -37,22 +52,9 @@ jobs:
         run: |
           brew update
           brew tap huangyangcong/llvm
-          brew install huangyangcong/llvm/llvm@11 gcc@11 automake libtool boost doxygen pyenv binutils zlib bzip2
+          brew install huangyangcong/llvm/llvm@11 cmake@3.31.1 gcc@11 automake libtool boost doxygen pyenv binutils zlib bzip2
 
-      - name: Set up environment variables
-        run: |
-          echo 'export PATH="/opt/homebrew/opt/llvm@11/bin:$PATH"' >> $GITHUB_ENV
-          echo 'export LDFLAGS="-L/opt/homebrew/opt/llvm@11/lib -Wl,-rpath,/opt/homebrew/opt/llvm@11/lib"' >> $GITHUB_ENV
-          echo 'export CPPFLAGS="-I/opt/homebrew/opt/llvm@11/include"' >> $GITHUB_ENV
-          echo 'export PATH="/opt/homebrew/opt/binutils/bin:$PATH"' >> $GITHUB_ENV
-          echo 'export LDFLAGS="$LDFLAGS -L/opt/homebrew/opt/binutils/lib"' >> $GITHUB_ENV
-          echo 'export CPPFLAGS="$CPPFLAGS -I/opt/homebrew/opt/binutils/include"' >> $GITHUB_ENV
-          echo 'export LDFLAGS="$LDFLAGS -L/opt/homebrew/opt/zlib/lib"' >> $GITHUB_ENV
-          echo 'export CPPFLAGS="$CPPFLAGS -I/opt/homebrew/opt/zlib/include"' >> $GITHUB_ENV
-          echo 'export PKG_CONFIG_PATH="/opt/homebrew/opt/zlib/lib/pkgconfig"' >> $GITHUB_ENV
-          echo 'export PATH="/opt/homebrew/opt/bzip2/bin:$PATH"' >> $GITHUB_ENV
-          echo 'export LDFLAGS="$LDFLAGS -L/opt/homebrew/opt/bzip2/lib"' >> $GITHUB_ENV
-          echo 'export CPPFLAGS="$CPPFLAGS -I/opt/homebrew/opt/bzip2/include"' >> $GITHUB_ENV
+  
 
       - name: Clone & build spring
         run: |
