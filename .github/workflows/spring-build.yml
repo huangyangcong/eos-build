@@ -37,7 +37,7 @@ jobs:
         run: |
           brew update
           brew tap huangyangcong/llvm
-          brew install huangyangcong/llvm/llvm@11 cmake gcc@13 wget gmp automake libtool boost doxygen pyenv binutils zlib bzip2 xz
+          brew install huangyangcong/llvm/llvm@11 gcc@10 automake libtool boost doxygen pyenv binutils zlib bzip2
 
       - name: Clone & build spring
         run: |
@@ -50,7 +50,7 @@ jobs:
           mkdir -p spring_build/packages
           cd spring_build
           echo "BUILDING SPRING FROM v1.0.3"
-          cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=gcc-13 -DCMAKE_CXX_COMPILER=g++-13 -DCMAKE_PREFIX_PATH="/usr/local/opt/llvm@11;/usr/local/opt/gcc@13" ../
+          cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=gcc-10 -DCMAKE_CXX_COMPILER=g++-10 -DCMAKE_PREFIX_PATH="/usr/local/opt/llvm@11;/usr/local/opt/gcc@10" ../
           echo "FINISHED CMAKE SPRING"
           make -j $(sysctl -n hw.ncpu) package
           echo "FINISHED BUILDING SPRING"
