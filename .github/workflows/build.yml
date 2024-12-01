@@ -16,7 +16,7 @@ env:
   CDT_VERSION: "v4.1.0"
   SPRING_VERSION: "v1.0.3"
   SPRING_LLVM_VERSION: "17"
-  CDT_LLVM_VERSION: "9"
+  CDT_LLVM_VERSION: "11"
 
 jobs:
   build-cdt:
