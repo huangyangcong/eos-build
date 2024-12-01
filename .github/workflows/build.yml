@@ -1,4 +1,4 @@
-name: build spring
+name: build eos
 
 on:
   push:
@@ -33,31 +33,11 @@ jobs:
         run: |
           brew update
           brew tap huangyangcong/llvm
-          brew upgrade cmake
           #huangyangcong/llvm/llvm@11
-          brew install llvm@${{ env.LLVM_VERSION }} ninja gcc@11 automake libtool boost doxygen pyenv binutils zlib bzip2
-          brew --prefix llvm@${{ env.LLVM_VERSION }}
+          brew install huangyangcong/llvm/llvm@11 ninja gcc@11 automake libtool boost doxygen pyenv binutils zlib bzip2
+          brew --prefix llvm@11
           brew --prefix gcc@11
-          brew link llvm@${{ env.LLVM_VERSION }}
-          ls /opt/homebrew/opt/llvm@${{ env.LLVM_VERSION }}/bin
-          ls /opt/homebrew/opt/gcc@11/bin
-
-      - name: Clone & build spring
-        run: |
-          git clone -b release/1.0 --single-branch https://github.com/AntelopeIO/spring.git
-          cd spring
-          echo "spring_DIR=$(pwd)/lib/cmake/spring" >> $GITHUB_ENV
-          git checkout ${{ env.SPRING_VERSION }}
-          git pull origin ${{ env.SPRING_VERSION }}
-          git submodule update --init --recursive
-
-          mkdir -p spring_build/packages
-          cd spring_build
-          echo "BUILDING SPRING FROM ${{ env.SPRING_VERSION }}"
-          cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=/opt/homebrew/opt/llvm@${{ env.LLVM_VERSION }}/bin/clang-${{ env.LLVM_VERSION }} -DCMAKE_CXX_COMPILER=/opt/homebrew/opt/llvm@${{ env.LLVM_VERSION }}/bin/clang++ -DCMAKE_PREFIX_PATH="/opt/homebrew/opt/llvm@${{ env.LLVM_VERSION }};/opt/homebrew/opt/gcc@11" ../
-          echo "FINISHED CMAKE SPRING"
-          make -j $(sysctl -n hw.ncpu) package
-          echo "FINISHED BUILDING SPRING"
+          brew link llvm@11
 
       - name: Clone & build cdt
         run: |
@@ -80,7 +60,32 @@ jobs:
           chmod -R +x .
           ./generate_package.sh brew mac-cdt-${{ env.CDT_VERSION }} arm64
           echo "FINISHED GENERATE PACKAGE CDT"
+          
+      - name: Update dependencies
+        run: |
+          brew unlink llvm@11
+          brew install llvm@${{ env.LLVM_VERSION }}
+          brew link llvm@${{ env.LLVM_VERSION }}
+          brew --prefix llvm@${{ env.LLVM_VERSION }}
+          brew --prefix gcc@11
 
+      - name: Clone & build spring
+        run: |
+          git clone -b release/1.0 --single-branch https://github.com/AntelopeIO/spring.git
+          cd spring
+          echo "spring_DIR=$(pwd)/lib/cmake/spring" >> $GITHUB_ENV
+          git checkout ${{ env.SPRING_VERSION }}
+          git pull origin ${{ env.SPRING_VERSION }}
+          git submodule update --init --recursive
+
+          mkdir -p spring_build/packages
+          cd spring_build
+          echo "BUILDING SPRING FROM ${{ env.SPRING_VERSION }}"
+          cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=/opt/homebrew/opt/llvm@${{ env.LLVM_VERSION }}/bin/clang-${{ env.LLVM_VERSION }} -DCMAKE_CXX_COMPILER=/opt/homebrew/opt/llvm@${{ env.LLVM_VERSION }}/bin/clang++ -DCMAKE_PREFIX_PATH="/opt/homebrew/opt/llvm@${{ env.LLVM_VERSION }};/opt/homebrew/opt/gcc@11" ../
+          echo "FINISHED CMAKE SPRING"
+          make -j $(sysctl -n hw.ncpu) package
+          echo "FINISHED BUILDING SPRING"
+          
       - name: Clone & build eos-system-contract
         run: |
           git clone https://github.com/eosnetworkfoundation/eos-system-contracts.git
