@@ -25,51 +25,38 @@ jobs:
       fail-fast: false
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          submodules: true  # Checkout submodules
-      
-      - name: Cache Cdt directory
-        uses: actions/cache@v4
-        with:
-          path: cdt/build
-          key: eos-cdt-${{ runner.os }}-cmake-${{ hashFiles('**/CMakeLists.txt') }}
-          restore-keys: |
-            eos-cdt-${{ runner.os }}-cmake
-          save-always: true
-          
-      - name: Cache Spring directory
-        uses: actions/cache@v4
-        with:
-          path: |
-              spring/spring_build
-              spring/libraries
-          key: eos-spring-${{ runner.os }}-cmake-${{ hashFiles('**/CMakeLists.txt') }}
-          restore-keys: |
-            eos-spring-${{ runner.os }}-cmake
-          save-always: true
-
       - name: Install dependencies
         run: |
           brew update
           brew tap huangyangcong/llvm
           brew install llvm@${{ env.LLVM_VERSION }} opam ocaml libxml2 ninja gcc@11 automake libtool boost doxygen pyenv binutils zlib bzip2
-          brew --prefix llvm@${{ env.LLVM_VERSION }}
           brew link llvm@${{ env.LLVM_VERSION }}
           ls /opt/homebrew/opt/llvm@${{ env.LLVM_VERSION }}/bin
-
-      - name: Clone & build cdt
+          
+      - name: Clone cdt
         run: |
           git clone -b release/4.1 --single-branch https://github.com/AntelopeIO/cdt.git
+
+      - name: Restore cached cdt
+        id: cache-cdt-restore
+        uses: actions/cache/restore@v4
+        with:
+          key: eos-cdt-${{ runner.os }}-cmake
+          path: cdt/build
+
+      - name: build cdt
+        run: |
           cd cdt
-          echo 'export cdt_DIR="$(pwd)/build/lib/cmake/cdt"' >> $GITHUB_ENV
-          echo 'export cdt_BUILD_DIR="$(pwd)/build"' >> $GITHUB_ENV
+          echo "export cdt_DIR="$(pwd)/build/lib/cmake/cdt" >> $GITHUB_ENV
+          echo "export cdt_BUILD_DIR=$(pwd)/build" >> $GITHUB_ENV
           git checkout ${{ env.CDT_VERSION }}
           git pull origin ${{ env.CDT_VERSION }}
           git submodule update --init --recursive
           
-          mkdir build
+          # 检查是否存在构建目录
+          if [ ! -d "build" ]; then
+            mkdir build
+          fi
           cd build
           echo "BUILDING CDT FROM ${{ env.CDT_VERSION }}"
           cmake  -DCMAKE_C_COMPILER=/opt/homebrew/opt/llvm@${{ env.LLVM_VERSION }}/bin/clang-${{ env.LLVM_VERSION }} -DCMAKE_CXX_COMPILER=/opt/homebrew/opt/llvm@${{ env.LLVM_VERSION }}/bin/clang++ ..
@@ -83,17 +70,40 @@ jobs:
           #./generate_package.sh brew mac-cdt-${{ env.CDT_VERSION }} arm64
           echo "FINISHED GENERATE PACKAGE CDT"
           
-      - name: Clone & build spring
+      - name: Always Save cdt
+        id: cache-cdt-save
+        if: always() && steps.cache-primes-restore.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          key: eos-cdt-${{ runner.os }}-cmake
+          path: cdt/build
+
+      - name: Clone spring
         run: |
           git clone -b release/1.0 --single-branch https://github.com/AntelopeIO/spring.git
+          
+      - name: Restore cached cdt
+        id: cache-spring-restore
+        uses: actions/cache/restore@v4
+        with:
+          key: eos-spring-${{ runner.os }}-cmake
+          path: |
+              spring/spring_build
+              spring/libraries
+
+      - name: Build spring
+        run: |
           cd spring
           echo "export spring_DIR=$(pwd)/lib/cmake/spring" >> $GITHUB_ENV
-          echo 'export spring_BUILD_DIR="$(pwd)/build"' >> $GITHUB_ENV
+          echo "export spring_BUILD_DIR=$(pwd)/build" >> $GITHUB_ENV
           git checkout ${{ env.SPRING_VERSION }}
           git pull origin ${{ env.SPRING_VERSION }}
           git submodule update --init --recursive
 
-          mkdir -p spring_build/packages
+           # 检查是否存在构建目录
+          if [ ! -d "spring_build" ]; then
+            mkdir -p spring_build/packages
+          fi
           cd spring_build
           echo "BUILDING SPRING FROM ${{ env.SPRING_VERSION }}"
           cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=/opt/homebrew/opt/llvm@${{ env.LLVM_VERSION }}/bin/clang-${{ env.LLVM_VERSION }} -DCMAKE_CXX_COMPILER=/opt/homebrew/opt/llvm@${{ env.LLVM_VERSION }}/bin/clang++ -DCMAKE_PREFIX_PATH="/opt/homebrew/opt/llvm@${{ env.LLVM_VERSION }};/opt/homebrew/opt/gcc@11" ../
@@ -101,7 +111,17 @@ jobs:
           make -j $(sysctl -n hw.ncpu) package
           echo "FINISHED BUILDING SPRING"
           sudo make install
-      
+          
+      - name: Always Save spring
+        id: cache-spring-save
+        if: always() && steps.cache-primes-restore.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          key: eos-spring-${{ runner.os }}-cmake
+          path: |
+              spring/spring_build
+              spring/libraries
+          
       - name: Clone & build eosio-time
         run: |
           git clone https://github.com/eosnetworkfoundation/eosio.time.git
@@ -132,7 +152,7 @@ jobs:
           mkdir -p output/eos-system-contracts
           mkdir -p output/spring
           mkdir -p output/cdt
-          mv ${{ env.spring_DIR }}/*.zst output/
+          mv ${{ env.spring_BUILD_DIR }}/*.zst output/
           mv ${{ env.spring_BUILD_DIR }}/* output/spring
           mv ${{ env.cdt_BUILD_DIR }}/* output/cdt
           mv ${{ env.eosio_time_DIR }}/* output/eosio.time
