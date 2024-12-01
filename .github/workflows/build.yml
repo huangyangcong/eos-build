@@ -39,6 +39,7 @@ jobs:
           brew --prefix llvm@${{ env.CDT_LLVM_VERSION }}
           brew --prefix gcc@11
           brew link llvm@${{ env.CDT_LLVM_VERSION }}
+          ls /opt/homebrew/opt/llvm@${{ env.CDT_LLVM_VERSION }}
 
       - name: Clone & build cdt
         run: |
