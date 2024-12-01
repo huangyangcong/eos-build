@@ -53,23 +53,7 @@ jobs:
           git pull origin ${{ env.CDT_VERSION }}
           git submodule update --init --recursive
           
-          # 检查是否存在构建目录
-          if [ ! -d "build" ]; then
-            mkdir build
-            cd build
-            echo "BUILDING CDT FROM ${{ env.CDT_VERSION }}"
-            cmake  -DCMAKE_C_COMPILER=/opt/homebrew/opt/llvm@${{ env.LLVM_VERSION }}/bin/clang-${{ env.LLVM_VERSION }} -DCMAKE_CXX_COMPILER=/opt/homebrew/opt/llvm@${{ env.LLVM_VERSION }}/bin/clang++ ..
-            echo "FINISHED CMAKE CDT"
-            make -j $(sysctl -n hw.ncpu)
-            echo "FINISHED MAKE CDT FROM ${{ env.CDT_VERSION }}"
-            echo "FINISHED INSTALL CDT FROM ${{ env.CDT_VERSION }}"
-            #cd packages
-            #chmod -R +x .
-            #./generate_package.sh brew mac-cdt-${{ env.CDT_VERSION }} arm64
-            echo "FINISHED GENERATE PACKAGE CDT"
-          else
-            cd build
-          fi
+          cd build
           sudo make install
           
       #- name: Always Save cdt
