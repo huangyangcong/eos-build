@@ -25,17 +25,6 @@ jobs:
       fail-fast: false
 
     steps:
-      - name: Env test
-        run: |
-          mkdir t1
-          cd t1
-          echo "t1_DIR=$(pwd)/build" >> $GITHUB_ENV
-          
-      - name: Env test
-        run: |
-          echo $t1_DIR
-          echo ${{ env.t1_DIR }}
-          
       - name: Install dependencies
         run: |
           brew update
@@ -67,19 +56,19 @@ jobs:
           # 检查是否存在构建目录
           if [ ! -d "build" ]; then
             mkdir build
+            cd build
+            echo "BUILDING CDT FROM ${{ env.CDT_VERSION }}"
+            cmake  -DCMAKE_C_COMPILER=/opt/homebrew/opt/llvm@${{ env.LLVM_VERSION }}/bin/clang-${{ env.LLVM_VERSION }} -DCMAKE_CXX_COMPILER=/opt/homebrew/opt/llvm@${{ env.LLVM_VERSION }}/bin/clang++ ..
+            echo "FINISHED CMAKE CDT"
+            make -j $(sysctl -n hw.ncpu)
+            echo "FINISHED MAKE CDT FROM ${{ env.CDT_VERSION }}"
+            echo "FINISHED INSTALL CDT FROM ${{ env.CDT_VERSION }}"
+            #cd packages
+            #chmod -R +x .
+            #./generate_package.sh brew mac-cdt-${{ env.CDT_VERSION }} arm64
+            echo "FINISHED GENERATE PACKAGE CDT"
           fi
-          cd build
-          echo "BUILDING CDT FROM ${{ env.CDT_VERSION }}"
-          cmake  -DCMAKE_C_COMPILER=/opt/homebrew/opt/llvm@${{ env.LLVM_VERSION }}/bin/clang-${{ env.LLVM_VERSION }} -DCMAKE_CXX_COMPILER=/opt/homebrew/opt/llvm@${{ env.LLVM_VERSION }}/bin/clang++ ..
-          echo "FINISHED CMAKE CDT"
-          make -j $(sysctl -n hw.ncpu)
-          echo "FINISHED MAKE CDT FROM ${{ env.CDT_VERSION }}"
           sudo make install
-          echo "FINISHED INSTALL CDT FROM ${{ env.CDT_VERSION }}"
-          #cd packages
-          #chmod -R +x .
-          #./generate_package.sh brew mac-cdt-${{ env.CDT_VERSION }} arm64
-          echo "FINISHED GENERATE PACKAGE CDT"
           
       #- name: Always Save cdt
       #  id: cache-cdt-save
@@ -114,13 +103,14 @@ jobs:
            # 检查是否存在构建目录
           if [ ! -d "spring_build" ]; then
             mkdir -p spring_build/packages
+            cd spring_build
+            echo "BUILDING SPRING FROM ${{ env.SPRING_VERSION }}"
+            cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=/opt/homebrew/opt/llvm@${{ env.LLVM_VERSION }}/bin/clang-${{ env.LLVM_VERSION }} -DCMAKE_CXX_COMPILER=/opt/homebrew/opt/llvm@${{ env.LLVM_VERSION }}/bin/clang++ -DCMAKE_PREFIX_PATH="/opt/homebrew/opt/llvm@${{ env.LLVM_VERSION }};/opt/homebrew/opt/gcc@11" ../
+            echo "FINISHED CMAKE SPRING"
+            make -j $(sysctl -n hw.ncpu) package
+            echo "FINISHED BUILDING SPRING"
           fi
-          cd spring_build
-          echo "BUILDING SPRING FROM ${{ env.SPRING_VERSION }}"
-          cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=/opt/homebrew/opt/llvm@${{ env.LLVM_VERSION }}/bin/clang-${{ env.LLVM_VERSION }} -DCMAKE_CXX_COMPILER=/opt/homebrew/opt/llvm@${{ env.LLVM_VERSION }}/bin/clang++ -DCMAKE_PREFIX_PATH="/opt/homebrew/opt/llvm@${{ env.LLVM_VERSION }};/opt/homebrew/opt/gcc@11" ../
-          echo "FINISHED CMAKE SPRING"
-          make -j $(sysctl -n hw.ncpu) package
-          echo "FINISHED BUILDING SPRING"
+         
           sudo make install
           
       #- name: Always Save spring
