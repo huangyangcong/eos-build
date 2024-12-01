@@ -43,11 +43,11 @@ jobs:
         with:
           key: eos-cdt-${{ runner.os }}-cmake
           path: |
-		cdt/build
+	    cdt/build
 
       - name: Build cdt
         run: |
-	  ls ./cdt
+          ls ./cdt
           cd cdt
           echo "cdt_DIR=$(pwd)/build/lib/cmake/cdt" >> $GITHUB_ENV
           echo "cdt_BUILD_DIR=$(pwd)/build" >> $GITHUB_ENV
