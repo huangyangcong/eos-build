@@ -29,6 +29,26 @@ jobs:
         uses: actions/checkout@v4
         with:
           submodules: true  # Checkout submodules
+      
+      - name: Cache Cdt directory
+        uses: actions/cache@v4
+        with:
+          path: cdt/build
+          key: eos-cdt-${{ runner.os }}-cmake-${{ hashFiles('**/CMakeLists.txt') }}
+          restore-keys: |
+            eos-cdt-${{ runner.os }}-cmake
+          save-always: true
+          
+      - name: Cache Spring directory
+        uses: actions/cache@v4
+        with:
+          path: |
+              spring/spring_build
+              spring/libraries
+          key: eos-spring-${{ runner.os }}-cmake-${{ hashFiles('**/CMakeLists.txt') }}
+          restore-keys: |
+            eos-spring-${{ runner.os }}-cmake
+          save-always: true
 
       - name: Install dependencies
         run: |
