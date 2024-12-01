@@ -15,7 +15,7 @@ on:
 env:
   CDT_VERSION: "v4.1.0"
   SPRING_VERSION: "v1.0.3"
-  LLVM_VERSION: "17"
+  LLVM_VERSION: "15"
   
 jobs:
   build-cdt:
@@ -54,17 +54,20 @@ jobs:
           cmake  -DCMAKE_C_COMPILER=/opt/homebrew/opt/llvm@${{ env.LLVM_VERSION }}/bin/clang-${{ env.LLVM_VERSION }} -DCMAKE_CXX_COMPILER=/opt/homebrew/opt/llvm@${{ env.LLVM_VERSION }}/bin/clang++ ..
           echo "FINISHED CMAKE CDT"
           make -j $(sysctl -n hw.ncpu)
+          echo "FINISHED MAKE CDT FROM ${{ env.CDT_VERSION }}"
           sudo make install
-          cd packages
-          chmod -R +x .
-          ./generate_package.sh brew mac-cdt-${{ env.CDT_VERSION }} arm64
+          echo "FINISHED INSTALL CDT FROM ${{ env.CDT_VERSION }}"
+          #cd packages
+          #chmod -R +x .
+          #./generate_package.sh brew mac-cdt-${{ env.CDT_VERSION }} arm64
           echo "FINISHED GENERATE PACKAGE CDT"
           
       - name: Clone & build spring
         run: |
           git clone -b release/1.0 --single-branch https://github.com/AntelopeIO/spring.git
           cd spring
-          echo "spring_DIR=$(pwd)/lib/cmake/spring" >> $GITHUB_ENV
+          echo "export spring_DIR=$(pwd)/lib/cmake/spring" >> $GITHUB_ENV
+          echo 'export spring_BUILD_DIR="$(pwd)/build"' >> $GITHUB_ENV
           git checkout ${{ env.SPRING_VERSION }}
           git pull origin ${{ env.SPRING_VERSION }}
           git submodule update --init --recursive
@@ -103,7 +106,11 @@ jobs:
           mkdir -p output
           mkdir -p output/eosio.time
           mkdir -p output/eos-system-contracts
+          mkdir -p output/spring
+          mkdir -p output/cdt
           mv ${{ env.spring_DIR }}/*.zst output/
+          mv ${{ env.spring_BUILD_DIR }}/* output/spring
+          mv ${{ env.cdt_BUILD_DIR }}/* output/cdt
           mv ${{ env.eosio_time_DIR }}/* output/eosio.time
           mv ${{ env.eos_system_contracts_DIR }}/build/contracts/* output/eos-system-contracts
 
