@@ -43,7 +43,8 @@ jobs:
         with:
           key: eos-cdt-${{ runner.os }}-cmake
           path: |
-	    cdt/build
+             cdt/build
+             #cdt/libraries
 
       - name: Build cdt
         run: |
