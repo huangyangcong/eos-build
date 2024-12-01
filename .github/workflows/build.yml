@@ -44,10 +44,10 @@ jobs:
           key: eos-cdt-${{ runner.os }}-cmake
           path: cdt/build
 
-      - name: build cdt
+      - name: Build cdt
         run: |
           cd cdt
-          echo "export cdt_DIR="$(pwd)/build/lib/cmake/cdt" >> $GITHUB_ENV
+          echo "export cdt_DIR=$(pwd)/build/lib/cmake/cdt" >> $GITHUB_ENV
           echo "export cdt_BUILD_DIR=$(pwd)/build" >> $GITHUB_ENV
           git checkout ${{ env.CDT_VERSION }}
           git pull origin ${{ env.CDT_VERSION }}
