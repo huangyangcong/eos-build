@@ -47,8 +47,9 @@ jobs:
       - name: Build cdt
         run: |
           cd cdt
-          echo "export cdt_DIR=$(pwd)/build/lib/cmake/cdt" >> $GITHUB_ENV
-          echo "export cdt_BUILD_DIR=$(pwd)/build" >> $GITHUB_ENV
+          echo "cdt_DIR=$(pwd)/build/lib/cmake/cdt" >> $GITHUB_ENV
+          echo "cdt_BUILD_DIR=$(pwd)/build" >> $GITHUB_ENV
+		  echo ${{ env.cdt_BUILD_DIR }}
           git checkout ${{ env.CDT_VERSION }}
           git pull origin ${{ env.CDT_VERSION }}
           git submodule update --init --recursive
@@ -70,13 +71,13 @@ jobs:
           #./generate_package.sh brew mac-cdt-${{ env.CDT_VERSION }} arm64
           echo "FINISHED GENERATE PACKAGE CDT"
           
-      - name: Always Save cdt
-        id: cache-cdt-save
-        if: always()
-        uses: actions/cache/save@v4
-        with:
-          key: eos-cdt-${{ runner.os }}-cmake
-          path: cdt/build
+      #- name: Always Save cdt
+      #  id: cache-cdt-save
+      #  if: always()
+      #  uses: actions/cache/save@v4
+      #  with:
+      #    key: eos-cdt-${{ runner.os }}-cmake
+      #    path: cdt/build
 
       - name: Clone spring
         run: |
@@ -94,8 +95,8 @@ jobs:
       - name: Build spring
         run: |
           cd spring
-          echo "export spring_DIR=$(pwd)/lib/cmake/spring" >> $GITHUB_ENV
-          echo "export spring_BUILD_DIR=$(pwd)/build" >> $GITHUB_ENV
+          echo "spring_DIR=$(pwd)/lib/cmake/spring" >> $GITHUB_ENV
+          echo "spring_BUILD_DIR=$(pwd)/build" >> $GITHUB_ENV
           git checkout ${{ env.SPRING_VERSION }}
           git pull origin ${{ env.SPRING_VERSION }}
           git submodule update --init --recursive
@@ -112,15 +113,15 @@ jobs:
           echo "FINISHED BUILDING SPRING"
           sudo make install
           
-      - name: Always Save spring
-        id: cache-spring-save
-        if: always()
-        uses: actions/cache/save@v4
-        with:
-          key: eos-spring-${{ runner.os }}-cmake
-          path: |
-              spring/spring_build
-              spring/libraries
+      #- name: Always Save spring
+      #  id: cache-spring-save
+      #  if: always()
+      #  uses: actions/cache/save@v4
+      #  with:
+      #    key: eos-spring-${{ runner.os }}-cmake
+      #    path: |
+      #        spring/spring_build
+      #        spring/libraries
           
       - name: Clone & build eosio-time
         run: |
