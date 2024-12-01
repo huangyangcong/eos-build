@@ -15,7 +15,8 @@ on:
 env:
   CDT_VERSION: "v4.1.0"
   SPRING_VERSION: "v1.0.3"
-  LLVM_VERSION: "17"
+  SPRING_LLVM_VERSION: "17"
+  CDT_LLVM_VERSION: "9"
 
 jobs:
   build-cdt:
@@ -33,11 +34,11 @@ jobs:
         run: |
           brew update
           brew tap huangyangcong/llvm
-          #huangyangcong/llvm/llvm@11
-          brew install huangyangcong/llvm/llvm@11 ninja gcc@11 automake libtool boost doxygen pyenv binutils zlib bzip2
-          brew --prefix llvm@11
+          #huangyangcong/llvm/llvm@${{ env.CDT_LLVM_VERSION }}
+          brew install huangyangcong/llvm/llvm@${{ env.CDT_LLVM_VERSION }} ninja gcc@11 automake libtool boost doxygen pyenv binutils zlib bzip2
+          brew --prefix llvm@${{ env.CDT_LLVM_VERSION }}
           brew --prefix gcc@11
-          brew link llvm@11
+          brew link llvm@${{ env.CDT_LLVM_VERSION }}
 
       - name: Clone & build cdt
         run: |
@@ -52,7 +53,7 @@ jobs:
           mkdir build
           cd build
           echo "BUILDING CDT FROM ${{ env.CDT_VERSION }}"
-          cmake ..
+          cmake -DCMAKE_C_COMPILER=/opt/homebrew/opt/llvm@${{ env.CDT_LLVM_VERSION }}/bin/clang-${{ env.CDT_LLVM_VERSION }} ..
           echo "FINISHED CMAKE CDT"
           make -j $(sysctl -n hw.ncpu)
           make install
@@ -63,10 +64,10 @@ jobs:
           
       - name: Update dependencies
         run: |
-          brew unlink llvm@11
-          brew install llvm@${{ env.LLVM_VERSION }}
-          brew link llvm@${{ env.LLVM_VERSION }}
-          brew --prefix llvm@${{ env.LLVM_VERSION }}
+          brew unlink llvm@${{ env.CDT_LLVM_VERSION }}
+          brew install llvm@${{ env.SPRING_LLVM_VERSION }}
+          brew link llvm@${{ env.SPRING_LLVM_VERSION }}
+          brew --prefix llvm@${{ env.SPRING_LLVM_VERSION }}
           brew --prefix gcc@11
 
       - name: Clone & build spring
@@ -81,7 +82,7 @@ jobs:
           mkdir -p spring_build/packages
           cd spring_build
           echo "BUILDING SPRING FROM ${{ env.SPRING_VERSION }}"
-          cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=/opt/homebrew/opt/llvm@${{ env.LLVM_VERSION }}/bin/clang-${{ env.LLVM_VERSION }} -DCMAKE_CXX_COMPILER=/opt/homebrew/opt/llvm@${{ env.LLVM_VERSION }}/bin/clang++ -DCMAKE_PREFIX_PATH="/opt/homebrew/opt/llvm@${{ env.LLVM_VERSION }};/opt/homebrew/opt/gcc@11" ../
+          cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=/opt/homebrew/opt/llvm@${{ env.SPRING_LLVM_VERSION }}/bin/clang-${{ env.SPRING_LLVM_VERSION }} -DCMAKE_CXX_COMPILER=/opt/homebrew/opt/llvm@${{ env.SPRING_LLVM_VERSION }}/bin/clang++ -DCMAKE_PREFIX_PATH="/opt/homebrew/opt/llvm@${{ env.SPRING_LLVM_VERSION }};/opt/homebrew/opt/gcc@11" ../
           echo "FINISHED CMAKE SPRING"
           make -j $(sysctl -n hw.ncpu) package
           echo "FINISHED BUILDING SPRING"
