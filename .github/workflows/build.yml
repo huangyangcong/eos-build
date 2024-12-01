@@ -42,7 +42,9 @@ jobs:
         uses: actions/cache/restore@v4
         with:
           key: eos-cdt-${{ runner.os }}-cmake
-          path: cdt/build
+          path: |
+            cdt/build
+            cdt/libraries
           
       - name: Build cdt
         run: |
@@ -67,6 +69,8 @@ jobs:
             #chmod -R +x .
             #./generate_package.sh brew mac-cdt-${{ env.CDT_VERSION }} arm64
             echo "FINISHED GENERATE PACKAGE CDT"
+          else
+            cd build
           fi
           sudo make install
           
@@ -76,7 +80,9 @@ jobs:
       #  uses: actions/cache/save@v4
       #  with:
       #    key: eos-cdt-${{ runner.os }}-cmake
-      #    path: cdt/build
+      #    path: |
+      #      cdt/build
+      #      cdt/libraries
 
       - name: Clone spring
         run: |
@@ -109,8 +115,9 @@ jobs:
             echo "FINISHED CMAKE SPRING"
             make -j $(sysctl -n hw.ncpu) package
             echo "FINISHED BUILDING SPRING"
+          else
+            cd spring_build
           fi
-         
           sudo make install
           
       #- name: Always Save spring
