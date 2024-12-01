@@ -42,10 +42,8 @@ jobs:
         uses: actions/cache/restore@v4
         with:
           key: eos-cdt-${{ runner.os }}-cmake
-          path: |
-            cdt/build
-            cdt/libraries
-          
+          path: cdt/build
+
       - name: Build cdt
         run: |
           cd cdt
