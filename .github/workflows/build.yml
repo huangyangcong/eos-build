@@ -72,7 +72,7 @@ jobs:
           
       - name: Always Save cdt
         id: cache-cdt-save
-        if: always() && steps.cache-primes-restore.outputs.cache-hit != 'true'
+        if: always()
         uses: actions/cache/save@v4
         with:
           key: eos-cdt-${{ runner.os }}-cmake
@@ -114,7 +114,7 @@ jobs:
           
       - name: Always Save spring
         id: cache-spring-save
-        if: always() && steps.cache-primes-restore.outputs.cache-hit != 'true'
+        if: always()
         uses: actions/cache/save@v4
         with:
           key: eos-spring-${{ runner.os }}-cmake
