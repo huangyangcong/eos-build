@@ -35,7 +35,7 @@ jobs:
           brew update
           brew tap huangyangcong/llvm
           #huangyangcong/llvm/llvm@${{ env.CDT_LLVM_VERSION }}
-          brew install huangyangcong/llvm/llvm@${{ env.CDT_LLVM_VERSION }} ninja gcc@11 automake libtool boost doxygen pyenv binutils zlib bzip2
+          brew install huangyangcong/llvm/llvm@${{ env.CDT_LLVM_VERSION }} opam ocaml libxml2 ninja gcc@11 automake libtool boost doxygen pyenv binutils zlib bzip2
           brew --prefix llvm@${{ env.CDT_LLVM_VERSION }}
           brew --prefix gcc@11
           brew link llvm@${{ env.CDT_LLVM_VERSION }}
