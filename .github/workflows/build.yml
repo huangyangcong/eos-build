@@ -15,6 +15,7 @@ on:
 env:
   CDT_VERSION: "v4.1.0"
   SPRING_VERSION: "v1.0.3"
+  CONTRACT_VERSION: "v3.6.0"
   LLVM_VERSION: "17"
   
 jobs:
@@ -79,28 +80,31 @@ jobs:
           echo "FINISHED CMAKE SPRING"
           make -j $(sysctl -n hw.ncpu) package
           echo "FINISHED BUILDING SPRING"
-          
-      - name: Clone & build eos-system-contract
-        run: |
-          git clone https://github.com/eosnetworkfoundation/eos-system-contracts.git
-          cd eos-system-contracts
-          echo 'export eos_system_contracts_DIR="$(pwd)' >> $GITHUB_ENV
-          git checkout ${{ env.CONTRACT_VERSION }}
-          git pull origin ${{ env.CONTRACT_VERSION }}
-          echo "BUILDING eos-system-contract FROM ${{ env.CONTRACT_VERSION }}"
-          mkdir build
-          cd build
-          cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTS=ON -Dspring_DIR=${{ env.spring_DIR }} ..
-          make -j $(sysctl -n hw.ncpu)
-          echo "FINISH eos-system-contract FROM ${{ env.CONTRACT_VERSION }}"
-
+          sudo make install
+      
       - name: Clone & build eosio-time
         run: |
           git clone https://github.com/eosnetworkfoundation/eosio.time.git
           cd eosio.time
           echo 'export eosio_time_DIR="$(pwd)' >> $GITHUB_ENV
           cdt-cpp eosio.time.cpp
-          
+           
+      - name: Clone & build eos-system-contract
+        run: |
+          git clone https://github.com/eosnetworkfoundation/eos-system-contracts.git
+          cd eos-system-contracts
+          git checkout ${{ env.CONTRACT_VERSION }}
+          git pull origin ${{ env.CONTRACT_VERSION }}
+          echo 'export eos_system_contracts_DIR="$(pwd)' >> $GITHUB_ENV
+          git checkout ${{ env.CONTRACT_VERSION }}
+          git pull origin ${{ env.CONTRACT_VERSION }}
+          echo "BUILDING eos-system-contract FROM ${{ env.CONTRACT_VERSION }}"
+          mkdir build
+          cd build
+          cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTS=OFF -Dspring_DIR=${{ env.spring_DIR }} ..
+          make -j $(sysctl -n hw.ncpu)
+          echo "FINISH eos-system-contract FROM ${{ env.CONTRACT_VERSION }}"
+
       - name: Copy output
         run: |
           mkdir -p output
