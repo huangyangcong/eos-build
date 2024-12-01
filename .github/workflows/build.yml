@@ -25,6 +25,17 @@ jobs:
       fail-fast: false
 
     steps:
+      - name: Env test
+        run: |
+          mkdir t1
+          cd t1
+          echo "t1_DIR=$(pwd)/build" >> $GITHUB_ENV
+          
+      - name: Env test
+        run: |
+          echo $t1_DIR
+          echo ${{ env.t1_DIR }}
+          
       - name: Install dependencies
         run: |
           brew update
@@ -43,13 +54,12 @@ jobs:
         with:
           key: eos-cdt-${{ runner.os }}-cmake
           path: cdt/build
-
+          
       - name: Build cdt
         run: |
           cd cdt
           echo "cdt_DIR=$(pwd)/build/lib/cmake/cdt" >> $GITHUB_ENV
           echo "cdt_BUILD_DIR=$(pwd)/build" >> $GITHUB_ENV
-          echo ${{ env.cdt_BUILD_DIR }}
           git checkout ${{ env.CDT_VERSION }}
           git pull origin ${{ env.CDT_VERSION }}
           git submodule update --init --recursive
