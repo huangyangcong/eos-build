@@ -1,0 +1,118 @@
+name: build spring
+
+on:
+  push:
+    branches: ["main"]
+    tags: ["*"]
+    paths:
+      - '.github/workflows/build.yml' 
+  pull_request:
+    branches: ["main"]
+    paths:
+      - '.github/workflows/build.yml' 
+  workflow_dispatch:
+
+env:
+  CDT_VERSION: "v4.1.0"
+  SPRING_VERSION: "v1.0.3"
+  LLVM_VERSION: "17"
+
+jobs:
+  build-cdt:
+    runs-on: macos-latest
+    strategy:
+      fail-fast: false
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: true  # Checkout submodules
+
+      - name: Install dependencies
+        run: |
+          brew update
+          brew tap huangyangcong/llvm
+          brew upgrade cmake
+          #huangyangcong/llvm/llvm@11
+          brew install llvm@${{ env.LLVM_VERSION }} ninja gcc@11 automake libtool boost doxygen pyenv binutils zlib bzip2
+          brew --prefix llvm@${{ env.LLVM_VERSION }}
+          brew --prefix gcc@11
+          brew link llvm@${{ env.LLVM_VERSION }}
+          ls /opt/homebrew/opt/llvm@${{ env.LLVM_VERSION }}/bin
+          ls /opt/homebrew/opt/gcc@11/bin
+
+      - name: Clone & build spring
+        run: |
+          git clone -b release/1.0 --single-branch https://github.com/AntelopeIO/spring.git
+          cd spring
+          echo "spring_DIR=$(pwd)/lib/cmake/spring" >> $GITHUB_ENV
+          git checkout ${{ env.SPRING_VERSION }}
+          git pull origin ${{ env.SPRING_VERSION }}
+          git submodule update --init --recursive
+
+          mkdir -p spring_build/packages
+          cd spring_build
+          echo "BUILDING SPRING FROM ${{ env.SPRING_VERSION }}"
+          cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=/opt/homebrew/opt/llvm@${{ env.LLVM_VERSION }}/bin/clang-${{ env.LLVM_VERSION }} -DCMAKE_CXX_COMPILER=/opt/homebrew/opt/llvm@${{ env.LLVM_VERSION }}/bin/clang++ -DCMAKE_PREFIX_PATH="/opt/homebrew/opt/llvm@${{ env.LLVM_VERSION }};/opt/homebrew/opt/gcc@11" ../
+          echo "FINISHED CMAKE SPRING"
+          make -j $(sysctl -n hw.ncpu) package
+          echo "FINISHED BUILDING SPRING"
+
+      - name: Clone & build cdt
+        run: |
+          git clone -b release/4.1 --single-branch https://github.com/AntelopeIO/cdt.git
+          cd cdt
+          echo 'export cdt_DIR="$(pwd)/build/lib/cmake/cdt"' >> $GITHUB_ENV
+          echo 'export cdt_BUILD_DIR="$(pwd)/build"' >> $GITHUB_ENV
+          git checkout ${{ env.CDT_VERSION }}
+          git pull origin ${{ env.CDT_VERSION }}
+          git submodule update --init --recursive
+          
+          mkdir build
+          cd build
+          echo "BUILDING CDT FROM ${{ env.CDT_VERSION }}"
+          cmake ..
+          echo "FINISHED CMAKE CDT"
+          make -j $(sysctl -n hw.ncpu)
+          make install
+          cd packages
+          chmod -R +x .
+          ./generate_package.sh brew mac-cdt-${{ env.CDT_VERSION }} arm64
+          echo "FINISHED GENERATE PACKAGE CDT"
+
+      - name: Clone & build eos-system-contract
+        run: |
+          git clone https://github.com/eosnetworkfoundation/eos-system-contracts.git
+          cd eos-system-contracts
+          echo 'export eos_system_contracts_DIR="$(pwd)' >> $GITHUB_ENV
+          git checkout ${{ env.CONTRACT_VERSION }}
+          git pull origin ${{ env.CONTRACT_VERSION }}
+          echo "BUILDING eos-system-contract FROM ${{ env.CONTRACT_VERSION }}"
+          mkdir build
+          cd build
+          cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTS=ON -Dspring_DIR=${{ env.spring_DIR }} ..
+          make -j $(sysctl -n hw.ncpu)
+          echo "FINISH eos-system-contract FROM ${{ env.CONTRACT_VERSION }}"
+
+      - name: Clone & build eosio-time
+        run: |
+          git clone https://github.com/eosnetworkfoundation/eosio.time.git
+          cd eosio.time
+          echo 'export eosio_time_DIR="$(pwd)' >> $GITHUB_ENV
+          cdt-cpp eosio.time.cpp
+          
+      - name: Copy output
+        run: |
+          mkdir -p output
+          mkdir -p output/eosio.time
+          mkdir -p output/eos-system-contracts
+          mv ${{ env.spring_DIR }}/*.zst output/
+          mv ${{ env.eosio_time_DIR }}/* output/eosio.time
+          mv ${{ env.eos_system_contracts_DIR }}/build/contracts/* output/eos-system-contracts
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: docker-artifacts
+          path: output/*
