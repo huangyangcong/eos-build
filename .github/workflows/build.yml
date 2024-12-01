@@ -42,10 +42,13 @@ jobs:
         uses: actions/cache/restore@v4
         with:
           key: eos-cdt-${{ runner.os }}-cmake
-          path: cdt/build
+          path: |
+			cdt/build
+			#cdt/libraries
 
       - name: Build cdt
         run: |
+		  ls ./cdt
           cd cdt
           echo "cdt_DIR=$(pwd)/build/lib/cmake/cdt" >> $GITHUB_ENV
           echo "cdt_BUILD_DIR=$(pwd)/build" >> $GITHUB_ENV
@@ -53,18 +56,34 @@ jobs:
           git pull origin ${{ env.CDT_VERSION }}
           git submodule update --init --recursive
           
-          cd build
+          # 检查是否存在构建目录
+          if [ ! -d "build" ]; then
+            mkdir build
+            cd build
+            echo "BUILDING CDT FROM ${{ env.CDT_VERSION }}"
+            cmake  -DCMAKE_C_COMPILER=/opt/homebrew/opt/llvm@${{ env.LLVM_VERSION }}/bin/clang-${{ env.LLVM_VERSION }} -DCMAKE_CXX_COMPILER=/opt/homebrew/opt/llvm@${{ env.LLVM_VERSION }}/bin/clang++ ..
+            echo "FINISHED CMAKE CDT"
+            make -j $(sysctl -n hw.ncpu)
+            echo "FINISHED MAKE CDT FROM ${{ env.CDT_VERSION }}"
+            echo "FINISHED INSTALL CDT FROM ${{ env.CDT_VERSION }}"
+            #cd packages
+            #chmod -R +x .
+            #./generate_package.sh brew mac-cdt-${{ env.CDT_VERSION }} arm64
+            echo "FINISHED GENERATE PACKAGE CDT"
+          else
+            cd build
+          fi
           sudo make install
           
-      #- name: Always Save cdt
-      #  id: cache-cdt-save
-      #  if: always()
-      #  uses: actions/cache/save@v4
-      #  with:
-      #    key: eos-cdt-${{ runner.os }}-cmake
-      #    path: |
-      #      cdt/build
-      #      cdt/libraries
+      - name: Always Save cdt
+        id: cache-cdt-save
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          key: eos-cdt-${{ runner.os }}-cmake
+          path: |
+            cdt/build
+            cdt/libraries
 
       - name: Clone spring
         run: |
@@ -102,15 +121,15 @@ jobs:
           fi
           sudo make install
           
-      #- name: Always Save spring
-      #  id: cache-spring-save
-      #  if: always()
-      #  uses: actions/cache/save@v4
-      #  with:
-      #    key: eos-spring-${{ runner.os }}-cmake
-      #    path: |
-      #        spring/spring_build
-      #        spring/libraries
+      - name: Always Save spring
+        id: cache-spring-save
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          key: eos-spring-${{ runner.os }}-cmake
+          path: |
+              spring/spring_build
+              spring/libraries
           
       - name: Clone & build eosio-time
         run: |
