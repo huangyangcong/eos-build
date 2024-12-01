@@ -101,8 +101,8 @@ jobs:
       - name: Build spring
         run: |
           cd spring
-          echo "spring_DIR=$(pwd)/lib/cmake/spring" >> $GITHUB_ENV
-          echo "spring_BUILD_DIR=$(pwd)/build" >> $GITHUB_ENV
+          echo "spring_DIR=$(pwd)/spring_build/lib/cmake/spring" >> $GITHUB_ENV
+          echo "spring_BUILD_DIR=$(pwd)/spring_build" >> $GITHUB_ENV
           git checkout ${{ env.SPRING_VERSION }}
           git pull origin ${{ env.SPRING_VERSION }}
           git submodule update --init --recursive
