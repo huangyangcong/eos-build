@@ -49,7 +49,7 @@ jobs:
           cd cdt
           echo "cdt_DIR=$(pwd)/build/lib/cmake/cdt" >> $GITHUB_ENV
           echo "cdt_BUILD_DIR=$(pwd)/build" >> $GITHUB_ENV
-		  echo ${{ env.cdt_BUILD_DIR }}
+          echo ${{ env.cdt_BUILD_DIR }}
           git checkout ${{ env.CDT_VERSION }}
           git pull origin ${{ env.CDT_VERSION }}
           git submodule update --init --recursive
