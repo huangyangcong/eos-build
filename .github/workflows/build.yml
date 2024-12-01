@@ -27,10 +27,9 @@ jobs:
       - name: Install dependencies
         run: |
           brew update
-          brew tap huangyangcong/llvm
+          # brew tap huangyangcong/llvm
           brew install llvm@${{ env.LLVM_VERSION }} opam ocaml libxml2 ninja gcc@11 automake libtool boost doxygen pyenv binutils zlib bzip2
           brew link llvm@${{ env.LLVM_VERSION }}
-          ls /opt/homebrew/opt/llvm@${{ env.LLVM_VERSION }}/bin
           
       - name: Clone cdt
         run: |
@@ -38,7 +37,6 @@ jobs:
 
       - name: Build cdt
         run: |
-          ls ./cdt
           cd cdt
           echo "cdt_DIR=$(pwd)/build/lib/cmake/cdt" >> $GITHUB_ENV
           echo "cdt_BUILD_DIR=$(pwd)/build" >> $GITHUB_ENV
@@ -60,15 +58,15 @@ jobs:
           echo "FINISHED GENERATE PACKAGE CDT"
           sudo make install
           
-      - name: Always Save cdt
-        id: cache-cdt-save
-        if: always()
-        uses: actions/cache/save@v4
-        with:
-          key: eos-cdt-${{ runner.os }}-cmake
-          path: |
-            cdt/build
-            cdt/libraries
+      # - name: Always Save cdt
+      #   id: cache-cdt-save
+      #   if: always()
+      #   uses: actions/cache/save@v4
+      #   with:
+      #     key: eos-cdt-${{ runner.os }}-cmake
+      #     path: |
+      #       cdt/build
+      #       cdt/libraries
 
       - name: Clone spring
         run: |
@@ -92,15 +90,15 @@ jobs:
           echo "FINISHED BUILDING SPRING"
           sudo make install
           
-      - name: Always Save spring
-        id: cache-spring-save
-        if: always()
-        uses: actions/cache/save@v4
-        with:
-          key: eos-spring-${{ runner.os }}-cmake
-          path: |
-              spring/spring_build
-              spring/libraries
+      # - name: Always Save spring
+      #   id: cache-spring-save
+      #   if: always()
+      #   uses: actions/cache/save@v4
+      #   with:
+      #     key: eos-spring-${{ runner.os }}-cmake
+      #     path: |
+      #         spring/spring_build
+      #         spring/libraries
           
       - name: Clone & build eosio-time
         run: |
@@ -132,10 +130,10 @@ jobs:
           mkdir -p output/eos-system-contracts
           mkdir -p output/spring
           mkdir -p output/cdt
-          mv ${{ env.spring_BUILD_DIR }}/*.zst output/
+          # mv ${{ env.spring_BUILD_DIR }}/*.zst output/
           mv ${{ env.spring_BUILD_DIR }}/* output/spring
           mv ${{ env.cdt_BUILD_DIR }}/* output/cdt
-          mv ${{ env.eosio_time_DIR }}/* output/eosio.time
+          # mv ${{ env.eosio_time_DIR }}/* output/eosio.time
           mv ${{ env.eos_system_contracts_DIR }}/build/contracts/* output/eos-system-contracts
 
       - name: Upload artifacts
