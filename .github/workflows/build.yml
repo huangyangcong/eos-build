@@ -15,8 +15,8 @@ on:
 env:
   CDT_VERSION: "v4.1.0"
   SPRING_VERSION: "v1.0.3"
-  SPRING_LLVM_VERSION: "17"
-  CDT_LLVM_VERSION: "11"
+  SPRING_LLVM_VERSION: "18"
+  CDT_LLVM_VERSION: "18"
 
 jobs:
   build-cdt:
@@ -35,9 +35,8 @@ jobs:
           brew update
           brew tap huangyangcong/llvm
           #huangyangcong/llvm/llvm@${{ env.CDT_LLVM_VERSION }}
-          brew install huangyangcong/llvm/llvm@${{ env.CDT_LLVM_VERSION }} opam ocaml libxml2 ninja gcc@11 automake libtool boost doxygen pyenv binutils zlib bzip2
+          brew llvm@${{ env.CDT_LLVM_VERSION }} opam ocaml libxml2 ninja gcc@11 automake libtool boost doxygen pyenv binutils zlib bzip2
           brew --prefix llvm@${{ env.CDT_LLVM_VERSION }}
-          brew --prefix gcc@11
           brew link llvm@${{ env.CDT_LLVM_VERSION }}
           ls /opt/homebrew/opt/llvm@${{ env.CDT_LLVM_VERSION }}/bin
 
@@ -54,7 +53,7 @@ jobs:
           mkdir build
           cd build
           echo "BUILDING CDT FROM ${{ env.CDT_VERSION }}"
-          cmake -DCMAKE_C_COMPILER=/opt/homebrew/opt/llvm@${{ env.CDT_LLVM_VERSION }}/bin/clang-${{ env.CDT_LLVM_VERSION }} ..
+          cmake  -DCMAKE_C_COMPILER=/opt/homebrew/opt/llvm@${{ env.CDT_LLVM_VERSION }}/bin/clang-${{ env.CDT_LLVM_VERSION }} -DCMAKE_CXX_COMPILER=/opt/homebrew/opt/llvm@${{ env.CDT_LLVM_VERSION }}/bin/clang++ ..
           echo "FINISHED CMAKE CDT"
           make -j $(sysctl -n hw.ncpu)
           make install
@@ -63,14 +62,6 @@ jobs:
           ./generate_package.sh brew mac-cdt-${{ env.CDT_VERSION }} arm64
           echo "FINISHED GENERATE PACKAGE CDT"
           
-      - name: Update dependencies
-        run: |
-          brew unlink llvm@${{ env.CDT_LLVM_VERSION }}
-          brew install llvm@${{ env.SPRING_LLVM_VERSION }}
-          brew link llvm@${{ env.SPRING_LLVM_VERSION }}
-          brew --prefix llvm@${{ env.SPRING_LLVM_VERSION }}
-          brew --prefix gcc@11
-
       - name: Clone & build spring
         run: |
           git clone -b release/1.0 --single-branch https://github.com/AntelopeIO/spring.git
