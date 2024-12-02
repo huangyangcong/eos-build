@@ -104,7 +104,7 @@ jobs:
         run: |
           git clone https://github.com/eosnetworkfoundation/eosio.time.git
           cd eosio.time
-          echo 'export eosio_time_DIR="$(pwd)' >> $GITHUB_ENV
+          echo "export eosio_time_DIR=$(pwd)" >> $GITHUB_ENV
           cdt-cpp eosio.time.cpp
            
       - name: Clone & build eos-system-contract
