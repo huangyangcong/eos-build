@@ -113,7 +113,7 @@ jobs:
           cd eos-system-contracts
           git checkout ${{ env.CONTRACT_VERSION }}
           git pull origin ${{ env.CONTRACT_VERSION }}
-          echo 'export eos_system_contracts_DIR="$(pwd)' >> $GITHUB_ENV
+          echo 'export eos_system_contracts_DIR=$(pwd)' >> $GITHUB_ENV
           git checkout ${{ env.CONTRACT_VERSION }}
           git pull origin ${{ env.CONTRACT_VERSION }}
           echo "BUILDING eos-system-contract FROM ${{ env.CONTRACT_VERSION }}"
@@ -130,10 +130,9 @@ jobs:
           mkdir -p output/eos-system-contracts
           mkdir -p output/spring
           mkdir -p output/cdt
-          # mv ${{ env.spring_BUILD_DIR }}/*.zst output/
           mv ${{ env.spring_BUILD_DIR }}/* output/spring
           mv ${{ env.cdt_BUILD_DIR }}/* output/cdt
-          # mv ${{ env.eosio_time_DIR }}/* output/eosio.time
+          mv ${{ env.eosio_time_DIR }}/* output/eosio.time
           mv ${{ env.eos_system_contracts_DIR }}/build/contracts/* output/eos-system-contracts
 
       - name: Upload artifacts
