@@ -104,7 +104,7 @@ jobs:
         run: |
           git clone https://github.com/eosnetworkfoundation/eosio.time.git
           cd eosio.time
-          echo "export eosio_time_DIR=$(pwd)" >> $GITHUB_ENV
+          echo "eosio_time_DIR=$(pwd)" >> $GITHUB_ENV
           cdt-cpp eosio.time.cpp
            
       - name: Clone & build eos-system-contract
@@ -113,7 +113,7 @@ jobs:
           cd eos-system-contracts
           git checkout ${{ env.CONTRACT_VERSION }}
           git pull origin ${{ env.CONTRACT_VERSION }}
-          echo 'export eos_system_contracts_DIR=$(pwd)' >> $GITHUB_ENV
+          echo "eos_system_contracts_DIR=$(pwd)" >> $GITHUB_ENV
           git checkout ${{ env.CONTRACT_VERSION }}
           git pull origin ${{ env.CONTRACT_VERSION }}
           echo "BUILDING eos-system-contract FROM ${{ env.CONTRACT_VERSION }}"
