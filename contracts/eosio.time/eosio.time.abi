@@ -1,0 +1,33 @@
+{
+    "____comment": "This file was generated with eosio-abigen. DO NOT EDIT ",
+    "version": "eosio::abi/1.2",
+    "types": [],
+    "structs": [
+        {
+            "name": "checktime",
+            "base": "",
+            "fields": [
+                {
+                    "name": "time",
+                    "type": "time_point"
+                }
+            ]
+        }
+    ],
+    "actions": [
+        {
+            "name": "checktime",
+            "type": "checktime",
+            "ricardian_contract": "---\nspec_version: \"0.2.0\"\ntitle: checktime\nsummary: The current time must be passed {{time}} timestamp.\nicon: https://gateway.pinata.cloud/ipfs/QmNuun5QT3EEfXBfhxgDFRgSaDZs5pr71vSw7zrAeuuW8M#5dfad0df72772ee1ccc155e670c1d124f5c5122f1d5027565df38b418042d1dd\n---\n\n1. Assert error if time is not passed {{time}} timestamp.\n2. Transaction silently passes if the current time is passed {{time}} timestamp."
+        }
+    ],
+    "tables": [],
+    "ricardian_clauses": [
+        {
+            "id": "EOSIO Time",
+            "body": "1. Assert error if time is not passed {{time}} timestamp.\n2. Transaction silently passes if the current time is passed {{time}} timestamp."
+        }
+    ],
+    "variants": [],
+    "action_results": []
+}
